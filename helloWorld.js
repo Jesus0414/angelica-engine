@@ -32,6 +32,9 @@ const loadShader = (gl, type, source)=>{
 }
 
 const initShader = (gl, vsSource, fsSource )=>{
+
+
+
     const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
     const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
     const shaderProgram = gl.createProgram();
@@ -92,6 +95,53 @@ const drawScene = (gl, programInfo, buffers) =>{
     zNear, 
     zFar
     );
+
+  const modelViewMatrix = mat4.create();
+
+  mat4.translate(
+    modelViewMatrix,
+    modelViewMatrix,
+    [0, 0, -6]);
+
+  {
+    const numComponents = 2;  
+    const type = gl.FLOAT;    
+    const normalize = false;  
+    const stride = 0;
+    const offset = 0;
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+    gl.vertexAttribPointer(
+      programInfo.attribLocations.vertexPosition,
+      numComponents,
+      type,
+      normalize,
+      stride,
+      offset
+    );
+
+    gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+  }
+
+  gl.useProgram(programInfo.program);
+
+  gl.uniformMatrix4fv(
+    programInfo.uniformLocations.projectionMatrix,
+    false,
+    projectionMatrix
+  );
+
+  gl.uniformMatrix4fv(
+    programInfo.uniformLocations.modelViewMatrix,
+    false,
+    modelViewMatrix
+  );
+
+  {
+    const offset = 0;
+    const vertexCount = 4;
+    gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+  }
+
 }
 
 const main = ()=>{
