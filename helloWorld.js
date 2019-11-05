@@ -68,6 +68,32 @@ const initBuffers = gl=>{
   };
 }
 
+const drawScene = (gl, programInfo, buffers) =>{
+  /*RENDER*/ 
+  gl.clearColor(0, 0, 0, 1.0);
+  gl.clearDepth(1);//sirve para limpiar todo
+  gl.enable(gl.DEPTH_TEST);//depth es profundidad
+  gl.depthFunc(gl.LEQUAL);//lo de atrás se oscurece 
+
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  /*CAMERA*/
+  const fieldOfView = 45 * Math.PI / 180;
+  const aspect = gl.canvas.clientWidth  / gl.canvas.clientHeight;
+  const zNear = 0.1;
+  const zFar = 100;
+  
+  const projectionMatrix = mat4.create();
+
+  mat4.perspective(
+    projectionMatrix, 
+    fieldOfView, 
+    aspect, 
+    zNear, 
+    zFar
+    );
+}
+
 const main = ()=>{
   const gl = canvas.getContext("webgl2");
 
@@ -91,8 +117,10 @@ const main = ()=>{
 
   const buffers = initBuffers(gl);
 
-  gl.clearColor(0,0,0,1);//RGBA(A=Alpha)
-  gl.clear(gl.COLOR_BUFFER_BIT);
+  drawScene(gl, programInfo, buffers);
+
+  //gl.clearColor(0,0,0,1);//RGBA(A=Alpha)
+  //gl.clear(gl.COLOR_BUFFER_BIT);
 }
 
 window.onload = main;
