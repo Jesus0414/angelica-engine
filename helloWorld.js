@@ -95,7 +95,9 @@ const initBuffers = gl=>{
   };
 }
 
-const drawScene = (gl, programInfo, buffers) =>{
+let squareRotation = 0.0;
+
+const drawScene = (gl, programInfo, buffers, deltaTime) =>{
   /*RENDER*/ 
   gl.clearColor(0, 0, 0, 1.0);
   gl.clearDepth(1);//sirve para limpiar todo
@@ -125,7 +127,16 @@ const drawScene = (gl, programInfo, buffers) =>{
   mat4.translate(
     modelViewMatrix,
     modelViewMatrix,
-    [0, 0, -6]);
+    [0, 0, -6]
+    );
+  mat4.rotate(
+    modelViewMatrix,
+    modelViewMatrix,
+    squareRotation,
+    [1,0,1]
+  );
+    //cada frame tiene su tiempo "then"...
+    
 
     {
       const numComponents = 4;
@@ -183,10 +194,12 @@ const drawScene = (gl, programInfo, buffers) =>{
     gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
   }
   
-
+  squareRotation += deltaTime;
 }
 
-const main = ()=>{
+let then = 0;
+
+const render = now =>{
   const gl = canvas.getContext("webgl2");
 
   if (!gl)/*(gl === null)*/ {
@@ -210,10 +223,15 @@ const main = ()=>{
 
   const buffers = initBuffers(gl);
 
-  drawScene(gl, programInfo, buffers);
+  now *= 2;
+  const deltaTime = now - then;
+  then = now;
 
+  drawScene(gl, programInfo, buffers, deltaTime);
+
+  requestAnimationFrame(render);
   //gl.clearColor(0,0,0,1);//RGBA(A=Alpha)
   //gl.clear(gl.COLOR_BUFFER_BIT);
 }
 
-window.onload = main;
+requestAnimationFrame(render);
